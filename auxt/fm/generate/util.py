@@ -1,15 +1,18 @@
+from pathlib import Path
 from auxt.expt.result.m2 import M2ResultTableFactory
 
 class FalkoMerlinValidGenerationJobScriptInterface:
 
-    def get_input_path(self):
-        return self.eval_config['fm']['valid_bpe_src']
+    def get_data_bin(self):
+        path = Path(self.config['data']) / 'fm-valid' / 'data-bin'
+        return str(path.resolve())
 
 
 class FalkoMerlinTestGenerationJobScriptInterface:
 
-    def get_input_path(self):
-        return self.eval_config['fm']['test_bpe_src']
+    def get_data_bin(self):
+        path = Path(self.config['data']) / 'fm-test' / 'data-bin'
+        return str(path.resolve())
 
 
 class FalkoMerlinGenerationRunScriptGeneratorInterface:

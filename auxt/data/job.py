@@ -5,10 +5,6 @@ from auxt.util.command import spm_command, parallel_command
 class DataJobScript(JobScript):
     # localdir = True
 
-    def __init__(self, index):
-        self.index = index
-        super().__init__()
-
     def get_bpe_model_path(self):
         return Path(self.config['bpe_model']).resolve()
 

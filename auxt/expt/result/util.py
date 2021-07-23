@@ -13,13 +13,18 @@ def get_single_test_outdir_list(dataset, valid_result_table):
 
 
 def show_test_single_result(dataset, valid_result_table, result_class, result_list_class):
-    test_outdir_list = get_single_test_outdir_list(dataset, valid_result_table)
+    try:
+        test_outdir_list = get_single_test_outdir_list(dataset, valid_result_table)
+    except RuntimeError:
+        return
 
     test_result_list = result_list_class()
     for outdir in test_outdir_list:
         try:
             result = result_class(outdir)
             test_result_list.append(result)
+        except IndexError:
+            pass
         except FileNotFoundError:
             pass
 

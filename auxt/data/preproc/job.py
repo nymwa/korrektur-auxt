@@ -2,15 +2,23 @@ from pathlib import Path
 from auxt.data.job import DataJobScript
 
 class PreprocJobScript(DataJobScript):
-    def __init__(self, index, first_index = None):
-        self.first_index = first_index
-        super().__init__(index)
 
-    def make_path(self):
-        return '{}/preproc.sh'.format(self.index)
+    def make_bpe_model(self):
+        model = self.get_bpe_model_path()
+        self.append('MODELPATH={}'.format(model))
+        self.append('')
 
-    def is_following(self):
-        return (self.first_index is not None) and (self.first_index != self.index)
+    def make_encode(self, input_path, spm_command,
+            output_path, background = False):
+        self.append('cat {} \\'.format(input_path))
+        self.append('   | {} \\'.format(spm_command))
+        if self.config.get('r2l', False):
+            self.append('   | renversi \\')
+        self.append('   | progress \\')
+        if background:
+            self.append('   > {} &'.format(output_path))
+        else:
+            self.append('   > {}'.format(output_path))
 
     def make_following_dict_path(self, side):
         return '{}/data-bin/dict.{}.txt'.format(self.first_index, side)
@@ -31,6 +39,7 @@ class PreprocJobScript(DataJobScript):
 
         if dict_path is not None:
             dict_path = str(Path(dict_path).resolve())
+
         return dict_path
 
     def make_src_dict_path(self):
@@ -38,4 +47,35 @@ class PreprocJobScript(DataJobScript):
 
     def make_trg_dict_path(self):
         return self.make_dict_path('trg')
+
+
+class TrainPreprocJobScript(PreprocJobScript):
+
+    def __init__(self, index, first_index = None):
+        self.index = index
+        self.first_index = first_index
+        super().__init__()
+
+    def make_path(self):
+        return '{}/preproc.sh'.format(self.index)
+
+    def is_following(self):
+        if self.first_index is None:
+            return False
+        return self.first_index != self.index
+
+
+class EvalPreprocJobScript(PreprocJobScript):
+
+    def __init__(self, first_index):
+        self.first_index = first_index
+        super().__init__()
+
+    def make_path(self):
+        return '{}/preproc.sh'.format(self.name)
+
+    def is_following(self):
+        if self.first_index is None:
+            return False
+        return True
 

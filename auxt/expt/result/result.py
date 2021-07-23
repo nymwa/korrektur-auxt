@@ -58,11 +58,11 @@ class ResultTableFactory:
     def __init__(self):
         self.result_list_factory = self.make_result_list_factory()
 
-    def make(self, dataset, phase):
+    def make(self, dataset, phase, base = None):
         result_table = self.init_result_table()
 
         for index in make_train_indices():
-            phasedir = SinglePhaseDir(index, dataset, phase)
+            phasedir = SinglePhaseDir(index, dataset, phase, base = base)
             result_list = self.result_list_factory.make(phasedir)
             result_table.append(result_list)
 

@@ -47,7 +47,7 @@ class FScoreResultListFactory(ResultListFactory):
 
 
 class FScoreResultTable(ResultTable):
-    def show(self):
+    def show(self, ndigits = None):
         xs = ['index {} ({}): {}'.format(
             max(result_list).outdir.index,
             len(result_list),
@@ -59,6 +59,10 @@ class FScoreResultTable(ResultTable):
         avg_p = np.mean([x.p for x in max_list])
         avg_r = np.mean([x.r for x in max_list])
         avg_f = np.mean([x.f for x in max_list])
+        if ndigits is not None:
+            avg_p = round(avg_p, ndigits)
+            avg_r = round(avg_r, ndigits)
+            avg_f = round(avg_f, ndigits)
         line = 'average: {} ({}, {})'.format(avg_f, avg_p, avg_r)
         xs.append(line)
 

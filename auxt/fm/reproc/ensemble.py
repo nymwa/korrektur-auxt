@@ -18,8 +18,7 @@ class FalkoMerlinEnsembleReprocJobScript(
         return Path(self.config['rescore']['r2l_vocab']).resolve()
 
     def make_reversed_data(self):
-        self.append('yaml2tsv {} {} > {}'.format(
-            self.get_source_input_path(),
+        self.append('yaml2tsv < {} > {}'.format(
             self.make_output_yaml_path(),
             self.make_tsv_path()))
         self.append('cut -f 1 {} | renversi > {}'.format(

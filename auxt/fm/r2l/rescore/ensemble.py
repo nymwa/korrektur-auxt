@@ -6,14 +6,15 @@ from .util import (
         FalkoMerlinEnsembleR2LRescoreRunScriptGeneratorInterface)
 from auxt.expt.job import ExptJobScript
 from auxt.generator.run import EnsembleR2LRescoreRunScriptGenerator
-from auxt.expt.generate.job import GenerationJobScript, EnsembleGenerationJobScriptInterface
+from auxt.expt.generate.job import GenerationJobScript
 
-class FalkoMerlinEnsembleR2LRescoreJobScript(
-        EnsembleGenerationJobScriptInterface,
-        GenerationJobScript):
+class FalkoMerlinEnsembleR2LRescoreJobScript(GenerationJobScript):
 
     def get_score_reference(self):
         return True
+
+    def get_max_tokens(self):
+        return self.config['rescore'].get('max_tokens', 20000)
 
     def make_path(self):
         return self.outdir.make_path('rescore.sh')
@@ -22,7 +23,11 @@ class FalkoMerlinEnsembleR2LRescoreJobScript(
         command = self.make_generate_command()
 
         self.append('{} \\'.format(command))
-        ## TODO
+        self.append('   | r2l2tsv \\')
+        self.append('   | merge-r2l {} \\'.format(self.outdir.make_path('../output.yaml')))
+        self.append('   | tee {} \\'.format(self.outdir.make_path('output.yaml')))
+        self.append('   | select-best --r2l \\')
+        self.append('   > {}'.format(self.outdir.make_path('best.txt')))
 
 
 class FalkoMerlinValidEnsembleR2LRescoreJobScript(

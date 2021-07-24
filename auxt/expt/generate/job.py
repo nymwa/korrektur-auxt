@@ -39,7 +39,7 @@ class SingleGenerationJobScriptInterface:
 class EnsembleGenerationJobScriptInterface:
     def get_max_tokens(self):
         return self.config['generate'].get('ensemble_max_tokens',
-                self.config['generate'].get('max_tokens', 10000))
+                self.config['generate'].get('max_tokens', 2000))
 
 
 class GECGenerationJobScript(

@@ -1,5 +1,8 @@
 from auxt.util.prod import make_train_indices
-from auxt.directory.expt.outdir import SingleOutDir, EnsembleOutDir
+from auxt.directory.expt.outdir import (
+        SingleOutDir,
+        EnsembleOutDir,
+        EnsembleR2LRescoreOutDir)
 
 def get_single_test_outdir_list(dataset, valid_result_table):
     best_epoch_list = valid_result_table.get_best_epoch_list()
@@ -47,10 +50,27 @@ def show_ensemble_result(dataset, phase, result_class):
         pass
 
 
+def show_r2l_reranked_ensemble_result(dataset, phase, result_class):
+    try:
+        outdir = EnsembleR2LRescoreOutDir(dataset, phase)
+        result = result_class(outdir)
+        print('ensemble+r2l: {}'.format(result.show()))
+    except FileNotFoundError:
+        pass
+
+
 def show_valid_ensemble_result(dataset, result_class):
     show_ensemble_result(dataset, 'valid', result_class)
 
 
 def show_test_ensemble_result(dataset, result_class):
     show_ensemble_result(dataset, 'test', result_class)
+
+
+def show_valid_r2l_reranked_ensemble_result(dataset, result_class):
+    show_r2l_reranked_ensemble_result(dataset, 'valid', result_class)
+
+
+def show_test_r2l_reranked_ensemble_result(dataset, result_class):
+    show_r2l_reranked_ensemble_result(dataset, 'test', result_class)
 

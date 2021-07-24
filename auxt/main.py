@@ -6,6 +6,7 @@ from auxt.parser.generate import set_generate
 from auxt.parser.score import set_score
 from auxt.parser.result import set_result
 from auxt.parser.reproc import set_reproc
+from auxt.parser.rescore import set_rescore
 
 def add_first_parsers(first):
     set_conv(first)
@@ -14,7 +15,7 @@ def add_first_parsers(first):
     set_generate(first)
     set_score(first)
     set_reproc(first)
-    # set_rescore(first)
+    set_rescore(first)
     # set_rerank(first)
     set_result(first)
 

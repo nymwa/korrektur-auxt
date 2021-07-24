@@ -7,7 +7,8 @@ class SingleOutDir(ExptDir):
 
         self.index = index
         self.epoch = epoch
-        super().__init__(dataset, phase, base = base)
+        super().__init__(dataset, phase,
+                base = base, checkpoint_base = checkpoint_base)
 
     def get_checkpoint_path(self):
         return self.make_single_checkpoint_path(self.index, self.epoch)
@@ -26,7 +27,8 @@ class EnsembleOutDir(ExptDir):
             base = None, checkpoint_base = None):
 
         self.epoch_list = epoch_list
-        super().__init__(dataset, phase, base = base)
+        super().__init__(dataset, phase,
+                base = base, checkpoint_base = checkpoint_base)
 
     def get_checkpoint_path(self):
         checkpoint_path_list = [
@@ -40,7 +42,7 @@ class EnsembleOutDir(ExptDir):
                 self.phase)
 
 
-class EnsembleR2LRescoreOutDir(ExptDir):
+class EnsembleR2LRescoreOutDir(EnsembleOutDir):
 
     def make_dir_path(self):
         return 'ensemble/{}/{}/r2l'.format(
@@ -50,9 +52,12 @@ class EnsembleR2LRescoreOutDir(ExptDir):
 
 class EnsembleMLMRescoreOutDir(ExptDir):
 
-    def __init__(self, dataset, phase, arch, base = None):
+    def __init__(self, dataset, phase, arch,
+            base = None,
+            checkpoint_base = None):
         self.arch = arch
-        super().__init__(dataset, phase, base = base)
+        super().__init__(dataset, phase,
+                base = base, checkpoint_base = checkpoint_base)
 
     def make_dir_path(self):
         return 'ensemble/{}/{}/{}'.format(

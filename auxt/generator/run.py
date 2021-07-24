@@ -100,26 +100,19 @@ class EnsembleRunScriptGenerator(RunScriptGenerator):
         self.run_class(script_list)
 
 
-class EnsembleR2LRescoreRunScriptGenerator(RunScriptGenerator):
+class EnsembleR2LRescoreRunScriptGenerator(EnsembleRunScriptGenerator):
 
-    def valid_make(self):
-        outdir = EnsembleR2LRescoreOutDir(self.dataset, 'valid')
+    def valid_make(self, epoch_indices):
+        outdir = EnsembleR2LRescoreOutDir(self.dataset, 'valid',
+                epoch_list = epoch_indices,
+                checkpoint_base = self.config['rescore']['r2l_path'])
         job_script = self.valid_job_class(outdir)
         return job_script
 
-    def test_make(self):
-        outdir = EnsembleR2LRescoreOutDir(self.dataset, 'test')
+    def test_make(self, epoch_indices):
+        outdir = EnsembleR2LRescoreOutDir(self.dataset, 'test',
+                epoch_list = epoch_indices,
+                checkpoint_base = self.config['rescore']['r2l_path'])
         job_script = self.test_job_class(outdir)
         return job_script
-
-    def make(self):
-        script_list = []
-
-        if hasattr(self, 'valid_job_class'):
-            script_list.append(self.valid_make())
-
-        if hasattr(self, 'test_job_class'):
-            script_list.append(self.test_make())
-
-        self.run_class(script_list)
 

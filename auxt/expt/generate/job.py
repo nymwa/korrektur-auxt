@@ -5,6 +5,9 @@ class GenerationJobScript(ExptJobScript):
     def make_path(self):
         return self.outdir.make_path('generate.sh')
 
+    def get_beam_attributes(self):
+        return None, None
+
     def get_lenpen(self):
         return self.config['generate'].get('lenpen', 0.6)
 
@@ -20,12 +23,23 @@ class GenerationJobScript(ExptJobScript):
         command = fairseq_generate_command(
                 data_bin,
                 self.outdir.get_checkpoint_path(),
-                beam,
-                nbest,
                 lenpen,
                 max_tokens,
+                beam,
+                nbest,
                 score_reference = score_reference)
         return command
+
+
+class SingleGenerationJobScriptInterface:
+    def get_max_tokens(self):
+        return self.config['generate'].get('max_tokens', 10000)
+
+
+class EnsembleGenerationJobScriptInterface:
+    def get_max_tokens(self):
+        return self.config['generate'].get('ensemble_max_tokens',
+                self.config['generate'].get('max_tokens', 10000))
 
 
 class GECGenerationJobScript(
@@ -54,13 +68,14 @@ class GECGenerationJobScript(
         self.append('   > {}'.format(best_text))
 
 
-class GECSingleGenerationJobScript(GECGenerationJobScript):
-    def get_max_tokens(self):
-        return self.config['generate'].get('max_tokens', 10000)
+class GECSingleGenerationJobScript(
+        SingleGenerationJobScriptInterface,
+        GECGenerationJobScript):
+    pass
 
 
-class GECEnsembleGenerationJobScript(GECGenerationJobScript):
-    def get_max_tokens(self):
-        return self.config['generate'].get('ensemble_max_tokens',
-                self.config['generate'].get('max_tokens', 2000))
+class GECEnsembleGenerationJobScript(
+        EnsembleGenerationJobScriptInterface,
+        GECGenerationJobScript):
+    pass
 

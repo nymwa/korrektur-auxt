@@ -1,3 +1,4 @@
+from pathlib import Path
 from auxt.directory.base import BaseDir
 
 class ExptDir(BaseDir):
@@ -7,7 +8,12 @@ class ExptDir(BaseDir):
 
         self.dataset = dataset
         self.phase = phase
-        self.checkpoint_base = checkpoint_base
+
+        if checkpoint_base is None:
+            self.checkpoint_base = None
+        else:
+            self.checkpoint_base = Path(checkpoint_base).resolve()
+
         super().__init__(base = base)
 
     def make_single_checkpoint_path(self, index, epoch):

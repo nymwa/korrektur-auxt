@@ -11,11 +11,8 @@ class FalkoMerlinEnsembleReprocJobScript(
         EvalExptJobScriptInterface,
         ExptJobScript):
 
-    def __init__(self, outdir):
-        super().__init__(outdir)
-
     def make_path(self):
-        return self.outdir.make_path('r2l_reproc.sh')
+        return self.outdir.make_path('reproc.sh')
 
     def make_src_dict_path(self):
         return Path(self.config['rescore']['r2l_vocab']).resolve()

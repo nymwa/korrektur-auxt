@@ -1,5 +1,5 @@
 from auxt.util.prod import make_train_indices
-from auxt.expt.outdir import SingleOutDir, EnsembleOutDir
+from auxt.directory.expt.outdir import SingleOutDir, EnsembleOutDir
 
 def get_single_test_outdir_list(dataset, valid_result_table):
     best_epoch_list = valid_result_table.get_best_epoch_list()

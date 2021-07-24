@@ -1,6 +1,6 @@
 from pathlib import Path
 from auxt.script.job import JobScript
-from .fairseq import FairseqTrainCommand
+from auxt.util.fairseq.train import FairseqTrainCommand
 
 class WorkerJobScript(JobScript):
     def __init__(self, index, num_node, gpu_per_node = None, port = None):
@@ -48,21 +48,30 @@ class WorkerJobScript(JobScript):
         data_indices = self.config['data_indices'][self.index]
         return data_indices
 
+    def make_restore_file_path(self):
+        file_path = self.config['train']['restore_file'][self.index]
+        return str(Path(file_path).resolve())
+
     def make_train_command(self, data_indices):
         data_bin = self.make_data_bins(self.config['data'], data_indices)
         log_file = str(Path(str(self.index)).resolve() / 'train.log')
         command = FairseqTrainCommand(data_bin, log_file)
 
         if 'restore_file' in self.config['train']:
-            command.restore_file(str(Path(self.config['train']['restore_file'][self.index]).resolve()))
+            command.restore_file(self.make_restore_file_path())
 
         command.seed(self.config['train']['seed_list'][self.index])
         command.log()
+
         if 'save_interval' in self.config['train']:
             command.save_interval(self.config['train']['save_interval'])
-        command.fp16()
+
+        if self.config.get('fp16', True):
+            command.fp16()
+
         if self.config.get('no_c10d', False):
             command.no_c10d()
+
         command.epoch(self.config['train']['max_epoch'])
         command.batch(self.config['train']['update_freq'], self.config['train']['max_tokens'])
         command.arch(

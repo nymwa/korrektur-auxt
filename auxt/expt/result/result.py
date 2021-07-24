@@ -1,5 +1,5 @@
 from auxt.util.prod import make_train_indices
-from auxt.expt.outdir import SinglePhaseDir
+from auxt.directory.expt.phasedir import SinglePhaseDir
 
 class Result:
     def __init__(self, outdir, filename = None, l = None):

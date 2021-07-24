@@ -20,6 +20,7 @@ class FalkoMerlinTestEnsembleGenerationJobScript(
 
 class FalkoMerlinEnsembleGenerationRunScript(
         RunScript):
+
     def make_path(self):
         return 'generate_fm_ensemble.sh'
 

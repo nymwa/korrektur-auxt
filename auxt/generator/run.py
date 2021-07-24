@@ -1,6 +1,9 @@
 from .generator import ScriptGenerator
 from auxt.util.prod import make_train_indices, make_epoch_indices
-from auxt.expt.outdir import SingleOutDir, EnsembleOutDir
+from auxt.directory.expt.outdir import (
+        SingleOutDir,
+        EnsembleOutDir,
+        EnsembleR2LRescoreOutDir)
 
 class RunScriptGenerator(ScriptGenerator):
 
@@ -74,19 +77,49 @@ class EnsembleRunScriptGenerator(RunScriptGenerator):
             epoch_indices = None
         return epoch_indices
 
+    def valid_make(self, epoch_indices):
+        outdir = EnsembleOutDir(self.dataset, 'valid', epoch_indices)
+        job_script = self.valid_job_class(outdir)
+        return job_script
+
+    def test_make(self, epoch_indices):
+        outdir = EnsembleOutDir(self.dataset, 'test', epoch_indices)
+        job_script = self.test_job_class(outdir)
+        return job_script
+
     def make(self):
         epoch_indices = self.get_epoch_indices()
         script_list = []
 
         if hasattr(self, 'valid_job_class'):
-            valid_outdir = EnsembleOutDir(self.dataset, 'valid', epoch_indices)
-            valid_job_script = self.valid_job_class(valid_outdir)
-            script_list.append(valid_job_script)
+            script_list.append(self.valid_make(epoch_indices))
 
         if hasattr(self, 'test_job_class'):
-            test_outdir = EnsembleOutDir(self.dataset, 'test', epoch_indices)
-            test_job_script = self.test_job_class(test_outdir)
-            script_list.append(test_job_script)
+            script_list.append(self.test_make(epoch_indices))
+
+        self.run_class(script_list)
+
+
+class EnsembleR2LRescoreRunScriptGenerator(RunScriptGenerator):
+
+    def valid_make(self):
+        outdir = EnsembleR2LRescoreOutDir(self.dataset, 'valid')
+        job_script = self.valid_job_class(outdir)
+        return job_script
+
+    def test_make(self):
+        outdir = EnsembleR2LRescoreOutDir(self.dataset, 'test')
+        job_script = self.test_job_class(outdir)
+        return job_script
+
+    def make(self):
+        script_list = []
+
+        if hasattr(self, 'valid_job_class'):
+            script_list.append(self.valid_make())
+
+        if hasattr(self, 'test_job_class'):
+            script_list.append(self.test_make())
 
         self.run_class(script_list)
 

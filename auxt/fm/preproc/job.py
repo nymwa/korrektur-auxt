@@ -1,6 +1,6 @@
 from pathlib import Path
 from auxt.data.preproc.job import TrainPreprocJobScript, EvalPreprocJobScript
-from auxt.data.preproc.fairseq import fairseq_preprocess_command
+from auxt.util.fairseq.preproc import fairseq_preprocess_command
 
 class FalkoMerlinPreprocJobScriptInterface:
 

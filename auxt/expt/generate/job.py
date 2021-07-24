@@ -1,5 +1,5 @@
 from auxt.expt.job import ExptJobScript, EvalExptJobScriptInterface
-from auxt.util.fairseq_generate import fairseq_generate_command
+from auxt.util.fairseq.generate import fairseq_generate_command
 
 class GenerationJobScript(ExptJobScript):
     def make_path(self):
@@ -39,7 +39,7 @@ class GECGenerationJobScript(
 
     def make(self):
         command = self.make_generate_command()
-        output_path = self.outdir.make_path('outdir.yaml')
+        output_path = self.outdir.make_path('output.yaml')
         best_text = self.outdir.make_path('best.txt')
 
         self.append('{} \\'.format(command))

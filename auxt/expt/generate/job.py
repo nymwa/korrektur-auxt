@@ -2,6 +2,7 @@ from auxt.expt.job import ExptJobScript, EvalExptJobScriptInterface
 from auxt.util.fairseq.generate import fairseq_generate_command
 
 class GenerationJobScript(ExptJobScript):
+
     def make_path(self):
         return self.outdir.make_path('generate.sh')
 
@@ -32,11 +33,13 @@ class GenerationJobScript(ExptJobScript):
 
 
 class SingleGenerationJobScriptInterface:
+
     def get_max_tokens(self):
         return self.config['generate'].get('max_tokens', 10000)
 
 
 class EnsembleGenerationJobScriptInterface:
+
     def get_max_tokens(self):
         return self.config['generate'].get('ensemble_max_tokens',
                 self.config['generate'].get('max_tokens', 2000))

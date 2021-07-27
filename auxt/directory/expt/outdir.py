@@ -42,7 +42,7 @@ class EnsembleOutDir(ExptDir):
                 self.phase)
 
 
-class EnsembleR2LRescoreOutDir(EnsembleOutDir):
+class EnsembleR2LRerankOutDir(EnsembleOutDir):
 
     def make_dir_path(self):
         return 'ensemble/{}/{}/r2l'.format(
@@ -50,7 +50,7 @@ class EnsembleR2LRescoreOutDir(EnsembleOutDir):
                 self.phase)
 
 
-class EnsembleMLMRescoreOutDir(ExptDir):
+class EnsembleMLMRerankOutDir(ExptDir):
 
     def __init__(self, dataset, phase, arch,
             base = None,

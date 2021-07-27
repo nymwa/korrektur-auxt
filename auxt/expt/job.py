@@ -6,6 +6,7 @@ class ExptJobScript(JobScript):
         self.outdir = outdir
         super().__init__()
 
+
 class EvalExptJobScriptInterface:
     def prepare(self):
         with open(self.config['eval_config']) as f:

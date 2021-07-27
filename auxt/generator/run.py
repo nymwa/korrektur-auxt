@@ -3,7 +3,8 @@ from auxt.util.prod import make_train_indices, make_epoch_indices
 from auxt.directory.expt.outdir import (
         SingleOutDir,
         EnsembleOutDir,
-        EnsembleR2LRescoreOutDir)
+        EnsembleR2LRerankOutDir,
+        EnsembleMLMRerankOutDir)
 
 class RunScriptGenerator(ScriptGenerator):
 
@@ -100,19 +101,76 @@ class EnsembleRunScriptGenerator(RunScriptGenerator):
         self.run_class(script_list)
 
 
-class EnsembleR2LRescoreRunScriptGenerator(EnsembleRunScriptGenerator):
+class EnsembleR2LRerankRunScriptGenerator(EnsembleRunScriptGenerator):
 
     def valid_make(self, epoch_indices):
-        outdir = EnsembleR2LRescoreOutDir(self.dataset, 'valid',
+        outdir = EnsembleR2LRerankOutDir(self.dataset, 'valid',
                 epoch_list = epoch_indices,
-                checkpoint_base = self.config['rescore']['r2l_path'])
+                checkpoint_base = self.config['rerank']['r2l_path'])
         job_script = self.valid_job_class(outdir)
         return job_script
 
     def test_make(self, epoch_indices):
-        outdir = EnsembleR2LRescoreOutDir(self.dataset, 'test',
+        outdir = EnsembleR2LRerankOutDir(self.dataset, 'test',
                 epoch_list = epoch_indices,
-                checkpoint_base = self.config['rescore']['r2l_path'])
+                checkpoint_base = self.config['rerank']['r2l_path'])
         job_script = self.test_job_class(outdir)
         return job_script
+
+
+class EnsembleMLMRerankRunScriptGenerator(RunScriptGenerator):
+
+    def valid_make(self, arch):
+        outdir = EnsembleMLMRerankOutDir(self.dataset, 'valid', arch)
+        script = self.valid_job_class(outdir)
+        return script
+
+    def test_make(self, arch):
+        outdir = EnsembleMLMRerankOutDir(self.dataset, 'test', arch)
+        script = self.test_job_class(outdir)
+        return script
+
+    def make(self):
+        script_list = []
+
+        for arch in self.config['rerank']['mlm_arch_list']:
+
+            if hasattr(self, 'valid_job_class'):
+                script_list.append(self.valid_make(arch))
+
+            if hasattr(self, 'test_job_class'):
+                script_list.append(self.test_make(arch))
+
+        self.run_class(script_list)
+
+
+class EnsembleMLMRerankScoreRunScriptGenerator(RunScriptGenerator):
+
+    def conv_lambda(self, l):
+        return int(l * 1000)
+
+    def phase_make(self, outdir, job_class):
+        return [job_class(outdir, self.conv_lambda(l))
+                for l in self.config['rerank']['lambda']]
+
+    def valid_make(self, arch):
+        outdir = EnsembleMLMRerankOutDir(self.dataset, 'valid', arch)
+        return self.phase_make(outdir, self.valid_job_class)
+
+    def test_make(self, arch):
+        outdir = EnsembleMLMRerankOutDir(self.dataset, 'test', arch)
+        return self.phase_make(outdir, self.test_job_class)
+
+    def make(self):
+        script_list = []
+
+        for arch in self.config['rerank']['mlm_arch_list']:
+
+            if hasattr(self, 'valid_job_class'):
+                script_list += self.valid_make(arch)
+
+            if hasattr(self, 'test_job_class'):
+                script_list += self.test_make(arch)
+
+        self.run_class(script_list)
 

@@ -4,7 +4,7 @@ from .util import (
         FalkoMerlinValidEnsembleReprocJobScriptInterface,
         FalkoMerlinTestEnsembleReprocJobScriptInterface)
 from auxt.expt.job import ExptJobScript, EvalExptJobScriptInterface
-from auxt.generator.run import EnsembleR2LRescoreRunScriptGenerator
+from auxt.generator.run import EnsembleR2LRerankRunScriptGenerator
 from auxt.util.fairseq.preproc import fairseq_preprocess_command
 
 class FalkoMerlinEnsembleReprocJobScript(
@@ -74,7 +74,7 @@ class FalkoMerlinEnsembleReprocRunScript(RunScript):
 
 
 class FalkoMerlinEnsembleReprocRunScriptGenerator(
-        EnsembleR2LRescoreRunScriptGenerator):
+        EnsembleR2LRerankRunScriptGenerator):
 
     def __init__(self):
         self.dataset = 'fm'

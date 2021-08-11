@@ -1,6 +1,16 @@
 from pathlib import Path
 from auxt.util.load import load_config
 
+import sys
+import logging
+from logging import getLogger, Formatter, StreamHandler
+logger = getLogger(__name__)
+logging.basicConfig(
+        format = '[%(asctime)s] (%(levelname)s) %(message)s',
+        datefmt = '%Y/%m/%d %H:%M:%S',
+        level = logging.INFO,
+        stream = sys.stdout)
+
 class Script(list):
     def __init__(self):
         super().__init__()
@@ -12,6 +22,7 @@ class Script(list):
         self.footer()
         self.make_dir()
         self.save()
+        logging.info('{}: {}'.format(type(self).__name__, self.path))
 
     def prepare(self):
         pass

@@ -15,10 +15,14 @@ class FScoreResult(Result):
 
 
 class FScoreResultList(ResultList):
-    def show_avg(self):
+    def show_avg(self, ndigits = None):
         avg_p = np.mean([result.p for result in self])
         avg_r = np.mean([result.r for result in self])
         avg_f = np.mean([result.f for result in self])
+        if ndigits is not None:
+            avg_p = round(avg_p, ndigits)
+            avg_r = round(avg_r, ndigits)
+            avg_f = round(avg_f, ndigits)
         line = 'average: {} ({}, {})'.format(avg_f, avg_p, avg_r)
         return line
 

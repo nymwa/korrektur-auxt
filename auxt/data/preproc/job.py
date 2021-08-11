@@ -1,6 +1,22 @@
 from pathlib import Path
 from auxt.data.job import DataJobScript
 
+def make_encode_last_line(output_path, overwrite, background):
+    line = '   '
+
+    if overwrite:
+        line += '>> '
+    else:
+        line += '> '
+
+    line += str(output_path)
+
+    if background:
+        line += ' &'
+
+    return line
+
+
 class PreprocJobScript(DataJobScript):
 
     def make_bpe_model(self):
@@ -8,17 +24,20 @@ class PreprocJobScript(DataJobScript):
         self.append('MODELPATH={}'.format(model))
         self.append('')
 
-    def make_encode(self, input_path, spm_command,
-            output_path, background = False):
+    def make_encode(self, input_path,
+            spm_command, output_path, 
+            overwrite = False,
+            background = False,
+            postprocessing = None):
+
         self.append('cat {} \\'.format(input_path))
         self.append('   | {} \\'.format(spm_command))
         if self.config.get('r2l', False):
             self.append('   | renversi \\')
+        if postprocessing:
+            self.append('   | {} \\'.format(postprocessing))
         self.append('   | progress \\')
-        if background:
-            self.append('   > {} &'.format(output_path))
-        else:
-            self.append('   > {}'.format(output_path))
+        self.append(make_encode_last_line(output_path, overwrite, background))
 
     def make_following_dict_path(self, side):
         return '{}/data-bin/dict.{}.txt'.format(self.first_index, side)

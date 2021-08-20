@@ -28,16 +28,20 @@ def make_lambda_indices():
     return config['rescore']['lambda']
 
 
-def make_mlm_arch_list():
+def make_mlm_arch_list(dataset = None):
     config = load_config()
 
     if 'rerank' not in config:
         return None
 
-    if 'mlm_arch_list' not in config['rerank']:
-        return None
+    if dataset in config['rerank']:
+        if 'mlm_arch_list' in config['rerank'][dataset]:
+            return config['rerank'][dataset]['mlm_arch_list']
 
-    return config['rerank']['mlm_arch_list']
+    if 'mlm_arch_list' in config['rerank']:
+        return config['rerank']['mlm_arch_list']
+
+    return None
 
 
 def make_lambda_list():

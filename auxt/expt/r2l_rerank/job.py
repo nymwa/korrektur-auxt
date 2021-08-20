@@ -11,14 +11,21 @@ class R2LRerankJobScript(GenerationJobScript):
 
 class EnsembleR2LRerankJobScript(R2LRerankJobScript):
 
+    def get_score_reference(self):
+        return True
+
     def get_max_tokens(self):
         return self.config['rerank'].get('max_tokens', 20000)
+
+    def make_path(self):
+        return self.outdir.make_path('rerank.sh')
 
     def make(self):
         command = self.make_generate_command()
 
         self.append('{} \\'.format(command))
-        self.append('   | r2l2tsv \\')
+        self.append('   | r2l2tsv{}\\'.format(
+            ' --with-tag ' if self.config['rerank']['with_tag'] else ' '))
         self.append('   | merge-r2l {} \\'.format(
             self.outdir.make_path('../output.yaml')))
         self.append('   | tee {} \\'.format(

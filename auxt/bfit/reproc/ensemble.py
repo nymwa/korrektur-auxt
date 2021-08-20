@@ -1,13 +1,15 @@
 from pathlib import Path
 from auxt.script.run import RunScript
 from .util import (
-        FalkoMerlinValidEnsembleReprocJobScriptInterface,
-        FalkoMerlinTestEnsembleReprocJobScriptInterface)
+        FMValidEnsembleReprocJobScriptInterface,
+        FMTestEnsembleReprocJobScriptInterface,
+        CoNLLValidEnsembleReprocJobScriptInterface,
+        CoNLLTestEnsembleReprocJobScriptInterface)
 from auxt.expt.job import ExptJobScript, EvalExptJobScriptInterface
 from auxt.generator.run import EnsembleR2LRerankRunScriptGenerator
 from auxt.util.fairseq.preproc import fairseq_preprocess_command
 
-class FalkoMerlinEnsembleReprocJobScript(
+class EnsembleReprocJobScript(
         EvalExptJobScriptInterface,
         ExptJobScript):
 
@@ -21,13 +23,15 @@ class FalkoMerlinEnsembleReprocJobScript(
         self.append('yaml2tsv < {} > {}'.format(
             self.make_output_yaml_path(),
             self.make_tsv_path()))
-        self.append('cut -f 1 {} | renversi > {}'.format(
+        self.append('cut -f 1 {} | renversi{}> {}'.format(
             self.make_tsv_path(),
+            ' --with-tag ' if self.config['rerank']['with_tag'] else ' ',
             self.make_source_path()))
         self.append('cut -f 2 {} | renversi > {}'.format(
             self.make_tsv_path(),
             self.make_target_path()))
-        self.append('renversi < {} > {}'.format(
+        self.append('renversi{}< {} > {}'.format(
+            ' --with-tag ' if self.config['rerank']['with_tag'] else ' ',
             self.get_false_source_input_path(),
             self.make_false_source_output_path()))
         self.append('renversi < {} > {}'.format(
@@ -55,35 +59,69 @@ class FalkoMerlinEnsembleReprocJobScript(
         self.make_command()
 
 
-class FalkoMerlinValidEnsembleReprocJobScript(
-        FalkoMerlinValidEnsembleReprocJobScriptInterface,
-        FalkoMerlinEnsembleReprocJobScript):
+class FMValidEnsembleReprocJobScript(
+        FMValidEnsembleReprocJobScriptInterface,
+        EnsembleReprocJobScript):
     pass
 
 
-class FalkoMerlinTestEnsembleReprocJobScript(
-        FalkoMerlinTestEnsembleReprocJobScriptInterface,
-        FalkoMerlinEnsembleReprocJobScript):
+class FMTestEnsembleReprocJobScript(
+        FMTestEnsembleReprocJobScriptInterface,
+        EnsembleReprocJobScript):
     pass
 
 
-class FalkoMerlinEnsembleReprocRunScript(RunScript):
+class FMEnsembleReprocRunScript(RunScript):
 
     def make_path(self):
         return 'r2l_reproc_fm_ensemble.sh'
 
 
-class FalkoMerlinEnsembleReprocRunScriptGenerator(
+class CoNLLValidEnsembleReprocJobScript(
+        CoNLLValidEnsembleReprocJobScriptInterface,
+        EnsembleReprocJobScript):
+    pass
+
+
+class CoNLLTestEnsembleReprocJobScript(
+        CoNLLTestEnsembleReprocJobScriptInterface,
+        EnsembleReprocJobScript):
+    pass
+
+
+class CoNLLEnsembleReprocRunScript(RunScript):
+
+    def make_path(self):
+        return 'r2l_reproc_conll_ensemble.sh'
+
+
+class FMEnsembleReprocRunScriptGenerator(
         EnsembleR2LRerankRunScriptGenerator):
 
     def __init__(self):
-        self.dataset = 'fm'
-        self.valid_job_class = FalkoMerlinValidEnsembleReprocJobScript
-        self.test_job_class = FalkoMerlinTestEnsembleReprocJobScript
-        self.run_class = FalkoMerlinEnsembleReprocRunScript
+        self.dataset, self.valid_job_class, self.test_job_class, self.run_class = (
+                'fm',
+                FMValidEnsembleReprocJobScript,
+                FMTestEnsembleReprocJobScript,
+                FMEnsembleReprocRunScript)
         super().__init__()
 
 
-def fm_ensemble_r2l_reproc():
-    FalkoMerlinEnsembleReprocRunScriptGenerator().make()
+class CoNLLEnsembleReprocRunScriptGenerator(
+        EnsembleR2LRerankRunScriptGenerator):
+
+    def __init__(self):
+        self.dataset, self.valid_job_class, self.test_job_class, self.run_class = (
+                'wf',
+                CoNLLValidEnsembleReprocJobScript,
+                CoNLLTestEnsembleReprocJobScript,
+                CoNLLEnsembleReprocRunScript)
+        super().__init__()
+
+
+def bfit_ensemble_r2l_reproc(fm):
+    FMEnsembleReprocRunScriptGenerator().make()
+
+    if not fm:
+        CoNLLEnsembleReprocRunScriptGenerator().make()
 

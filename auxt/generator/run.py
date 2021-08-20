@@ -133,7 +133,7 @@ class EnsembleMLMRerankRunScriptGenerator(RunScriptGenerator):
     def make(self):
         script_list = []
 
-        for arch in self.config['rerank']['mlm_arch_list']:
+        for arch in self.config['rerank'][self.dataset]['mlm_arch_list']:
 
             if hasattr(self, 'valid_job_class'):
                 script_list.append(self.valid_make(arch))
@@ -164,7 +164,7 @@ class EnsembleMLMRerankScoreRunScriptGenerator(RunScriptGenerator):
     def make(self):
         script_list = []
 
-        for arch in self.config['rerank']['mlm_arch_list']:
+        for arch in self.config['rerank'][self.dataset]['mlm_arch_list']:
 
             if hasattr(self, 'valid_job_class'):
                 script_list += self.valid_make(arch)

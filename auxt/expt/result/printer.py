@@ -24,6 +24,8 @@ class ResultPrinter:
     def show_test_single_result(self, ndigits = None):
         try:
             outdir_list = get_single_test_outdir_list(self.dataset, self.valid_result_table)
+        except IndexError:
+            return
         except RuntimeError:
             return
 
@@ -45,7 +47,7 @@ class ResultPrinter:
         show_r2l_reranked_ensemble_result(self.dataset, 'test', self.result_class)
 
     def show_valid_mlm_reranked_ensemble_result(self):
-        arch_list = make_mlm_arch_list()
+        arch_list = make_mlm_arch_list(dataset = self.dataset)
         if arch_list is None:
             return
 
@@ -59,7 +61,7 @@ class ResultPrinter:
                 self.best_lambda_dict[arch] = best_lambda
 
     def show_test_mlm_reranked_ensemble_result(self):
-        arch_list = make_mlm_arch_list()
+        arch_list = make_mlm_arch_list(dataset = self.dataset)
         if arch_list is None:
             return
 
@@ -68,6 +70,8 @@ class ResultPrinter:
                 try:
                     l = self.best_lambda_dict[arch]
                     show_test_mlm_reranked_ensemble_result(self.dataset, arch, l, self.result_class)
+                except IndexError:
+                    pass
                 except FileNotFoundError:
                     pass
 

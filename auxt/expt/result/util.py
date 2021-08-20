@@ -47,6 +47,8 @@ def show_ensemble_result(dataset, phase, result_class):
         outdir = EnsembleOutDir(dataset, phase, epoch_list = None)
         result = result_class(outdir)
         print('ensemble: {}'.format(result.show()))
+    except IndexError:
+        pass
     except FileNotFoundError:
         pass
 
@@ -56,6 +58,8 @@ def show_r2l_reranked_ensemble_result(dataset, phase, result_class):
         outdir = EnsembleR2LRerankOutDir(dataset, phase)
         result = result_class(outdir)
         print('ensemble+r2l: {}'.format(result.show()))
+    except IndexError:
+        pass
     except FileNotFoundError:
         pass
 
@@ -75,6 +79,8 @@ def make_valid_mlm_reranked_ensemble_result_list(dataset, arch, result_class, re
         try:
             result = make_mlm_reranked_result(outdir, result_class, l)
             result_list.append(result)
+        except IndexError:
+            pass
         except FileNotFoundError:
             pass
     return result_list

@@ -1,5 +1,6 @@
 from argparse import ArgumentParser
 from auxt.parser.conv import set_conv
+from auxt.parser.errant import set_errant
 from auxt.parser.preproc import set_preproc
 from auxt.parser.train import set_train
 from auxt.parser.generate import set_generate
@@ -10,6 +11,7 @@ from auxt.parser.rerank import set_rerank
 
 def add_first_parsers(first):
     set_conv(first)
+    set_errant(first)
     set_preproc(first)
     set_train(first)
     set_generate(first)
